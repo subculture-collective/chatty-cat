@@ -115,7 +115,7 @@ To build the desktop app or browser build yourself:
 npm --prefix web ci
 npm --prefix desktop ci
 python3 scripts/build-desktop.py              # desktop app for this machine
-python3 scripts/build-chatthing-release.py    # browser build archives
+python3 scripts/build-chatthing-release.py dist   # browser build archives into dist/
 ```
 
 ## Project layout
