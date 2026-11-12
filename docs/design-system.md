@@ -217,7 +217,7 @@ the font-size menu, rather than subtracting pixels.
 - **Introduction.** A signed-out visitor who has not dismissed it sees one strip above
   the log (`src/shell/intro.ts`): the primary lockup, the line "six channels. one
   scrollback." and two sentences on what Chatty Cat is, with a "Got it" button that
-  removes it for that browser (`chatthing:v1:intro-dismissed`). Signed-in accounts and
+  removes it for that browser (`chatty-cat:v1:intro-dismissed`). Signed-in accounts and
   readonly popouts never see it. It is the one shell surface in the brand's phosphor
   palette, whatever the chat palette is: its rule sets `--cat-bg`, `--cat-fg`,
   `--cat-face` and `--cat-cursor` to the phosphor values and uses only those. The lockup
