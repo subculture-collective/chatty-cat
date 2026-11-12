@@ -98,7 +98,7 @@ it('keeps unmoved rows in the old database after a failed batch, then resumes', 
     return db;
   };
   await expect(openRenamed('chatty-cat-archive', failing)).rejects.toThrow(
-    /still under its old name.*QuotaExceededError/,
+    /Not enough storage space.*QuotaExceededError/,
   );
   const old = await all('chatthing-archive', 'messages'),
     current = await all('chatty-cat-archive', 'messages');

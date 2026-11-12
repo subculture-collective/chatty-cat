@@ -44,7 +44,11 @@ export function renameStoredKeys(area: Storage): void {
           try {
             area.setItem(key, value);
           } catch {
-            area.setItem(old, raw);
+            try {
+              area.setItem(old, raw);
+            } catch {
+              /* Another tab took the freed space; nothing more can be kept. */
+            }
             continue;
           }
         }

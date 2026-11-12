@@ -537,21 +537,23 @@ them under the app's former name. The storage worker moves each one
 
 While a move runs, the worker sends a `moving` notice for each pending request,
 and the client restarts its 30-second timeout on each one. If a move fails, the
-data stays in the old database and the request fails with a message asking the
-user to close older tabs and reload.
+data stays in the old database and the request fails. A full disk gets a message
+asking the user to free space; other failures ask the user to close older tabs and
+reload.
 
 Page entries also move localStorage and sessionStorage keys from the former
 prefix to `chatty-cat:v1:` before anything reads them (`storage-rename.ts`).
 
 A build from before the rename cannot open a fenced or moved database and does
 not see the moved keys. Rolling back past this change shows default settings and
-empty or unavailable local history until the current build is restored; the
-data is not deleted.
+empty or unavailable local history until the current build is restored. Data
+saved before the rollback is kept, but changes made while the older build runs
+are discarded when the current build returns: its keys and rows win.
 
 ## Release boundary
 
 Stages one through six are deployed at `b95b7fb`; stages seven through eleven
-are not deployed. Rolling source back leaves the original database readable by
-the previous implementation. No schema reset or destructive data conversion is
+are not deployed. Rolling back past the database rename (see Database names)
+leaves local data unreadable by the older build. No schema reset or destructive data conversion is
 part of rollback. Do not treat a worker crash as permission to repeat an uncertain
 provider action.

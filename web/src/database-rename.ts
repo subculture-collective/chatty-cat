@@ -12,6 +12,7 @@ const FORMER: Record<string, { name: string; batch: number }> = {
 const FORMER_KEY = 'chatthing:v1:';
 const MOVE_FAILED =
   'Saved data is still under its old name; close older Chatty Cat tabs and reload to finish moving it.';
+const NO_ROOM = 'Not enough storage space to move saved data to its new name; free some space and reload.';
 
 let onProgress = (): void => {};
 // The storage worker forwards progress so that clients waiting on a long move do not time out.
@@ -45,15 +46,13 @@ async function moveDatabase(name: string, open: () => Promise<IDBDatabase>): Pro
   };
   try {
     await (locks ? locks.request('chatty-cat:v1:database-rename:' + name, run) : run());
-  } catch (error) {
-    const detail = error instanceof Error || error instanceof DOMException ? ` (${error.name}: ${error.message})` : '';
-    throw new Error(MOVE_FAILED + detail, { cause: error });
   } finally {
     clearInterval(waiting);
   }
 }
 
 async function move(former: string, batch: number, open: () => Promise<IDBDatabase>): Promise<void> {
+  // Errors before this point (no old database, or IndexedDB unavailable) keep their own message.
   const source = await fence(former);
   if (!source) return;
   try {
@@ -64,6 +63,10 @@ async function move(former: string, batch: number, open: () => Promise<IDBDataba
     } finally {
       target.close();
     }
+  } catch (error) {
+    const name = error instanceof Error || error instanceof DOMException ? error.name : '';
+    const detail = name ? ` (${name}: ${(error as Error).message})` : '';
+    throw new Error((name === 'QuotaExceededError' ? NO_ROOM : MOVE_FAILED) + detail, { cause: error });
   } finally {
     source.close();
   }

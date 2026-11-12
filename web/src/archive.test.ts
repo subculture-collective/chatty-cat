@@ -517,3 +517,18 @@ it('terminates its worker after a failed final append instead of leaving the dat
     vi.stubGlobal('Worker', native);
   }
 });
+it('keeps a longer backlog while the archive is still opening', async () => {
+  const { StorageWorkerClient } = await import('./storage-worker-client');
+  let opened!: () => void;
+  vi.spyOn(StorageWorkerClient.prototype, 'request').mockImplementation(((type: string) =>
+    type === 'archive.open' ? new Promise<void>((resolve) => (opened = resolve)) : new Promise(() => {})) as never);
+  const failure = vi.fn();
+  const a = new MessageArchive(failure);
+  archives.push(a);
+  for (let i = 0; i < 2500; i++) a.add({ ...message, id: 'id' + i });
+  expect(failure).not.toHaveBeenCalled();
+  opened();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  a.add({ ...message, id: 'late' });
+  expect(failure).toHaveBeenCalledWith('Archive backlog is full; some messages could not be saved');
+});
