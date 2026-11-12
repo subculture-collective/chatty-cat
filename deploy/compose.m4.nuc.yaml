@@ -3,10 +3,10 @@
 services:
   chat:
     environment:
-      CHATTHING_UPLOAD_DIR: /app/uploads
-      CHATTHING_SYNC_DIR: /app/sync
-      CHATTHING_PROVIDER_SERVICES: BTTV,7TV
-      CHATTHING_COSMETIC_PROVIDERS: FFZ,Chatterino
+      CHATTY_CAT_UPLOAD_DIR: /app/uploads
+      CHATTY_CAT_SYNC_DIR: /app/sync
+      CHATTY_CAT_PROVIDER_SERVICES: BTTV,7TV
+      CHATTY_CAT_COSMETIC_PROVIDERS: FFZ,Chatterino
     volumes:
       - type: bind
         source: /srv/apps/projects/chatty-cat/shared/uploads

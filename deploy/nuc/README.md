@@ -41,10 +41,29 @@ checkpoints are kept; nothing is pruned automatically.
 | --- | --- | --- |
 | `/usr/local/bin/chatty-cat-autodeploy` | root, 755 | `deploy/nuc/chatty-cat-autodeploy` |
 | `/usr/local/lib/chatty-cat-deploy/release.py` | root, 644 | `deploy/nuc/release.py` |
+| `/srv/apps/projects/chatty-cat/Dockerfile.release` | onnwee, 644 | `deploy/nuc/Dockerfile.release` |
 | `/srv/apps/projects/chatty-cat/build/` | onnwee | created by the script: clone, builder, temporary output |
 
 The installed copies are not updated from the repository automatically. After
-changing either file here, review it and install it again by hand.
+changing one of these files here, review it and install it again by hand, for
+example:
+
+```sh
+sudo install -o root -g root -m 755 deploy/nuc/chatty-cat-autodeploy /usr/local/bin/chatty-cat-autodeploy
+sudo install -o root -g root -m 644 deploy/nuc/release.py /usr/local/lib/chatty-cat-deploy/release.py
+install -m 644 deploy/nuc/Dockerfile.release /srv/apps/projects/chatty-cat/Dockerfile.release
+```
+
+Hold `/srv/apps/projects/chatty-cat/deploy.lock` while you do this, so
+`release.py` cannot run halfway through. Install `release.py` and `Dockerfile.release` together:
+`release.py` passes the binary's name to `Dockerfile.release` as `BIN`, and the
+image always runs it as `/app/chatty-cat-server`. Releases built before the
+binary was renamed ship it under its old name; `release.py` reads the name from
+the release manifest, so it can stage either.
+
+`Dockerfile.release` sets no application settings. `compose.nuc.yaml`,
+`compose.m4.yaml` and `shared/app.env` set them for production, and `release.py`
+sets them for the staging container.
 
 ## Operating it
 
